@@ -6,6 +6,7 @@
 #
 # All rights reserved - Do Not Redistribute
 #
+include_recipe 'git'
 include_recipe "python"
 
 include_recipe "panoptes::mysql_server"
