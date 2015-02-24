@@ -51,11 +51,19 @@ mysql_database node['panoptes']['database'] do
   action :create
 end
 
+#For the master database - but see below...
 mysql_database_user node['panoptes']['db_username'] do
   connection connection_info
   password node['panoptes']['db_password']
   database_name node['panoptes']['database']
   privileges [:select,:update,:insert,:create,:delete]
+  action :grant
+end
+
+#User needs to be able to create databases so give all perms on all dbs
+mysql_database_user node['panoptes']['db_username'] do
+  connection connection_info
+  password node['panoptes']['db_password']
   action :grant
 end
 
