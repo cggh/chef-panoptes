@@ -28,13 +28,16 @@ user node["panoptes"]["user"] do
 end
 
 install_dir = node["panoptes"]["home"] + node["panoptes"]["path"]
-directory install_dir do
-  owner node["panoptes"]["user"]
-  group "www-data"
-  mode "0755"
-  action :create
-  recursive true
+%w{install_dir node["panoptes"]["source_dir"] node["panoptes"]["base_dir"]}.each do |dir_name|
+  directory dir_name do
+    owner node["panoptes"]["user"]
+    group "www-data"
+    mode "0755"
+    action :create
+    recursive true
+  end
 end
+
 
 execute "untar-panoptes" do
   cwd install_dir
@@ -75,12 +78,14 @@ end
 git build_dir + "/DQX" do
   repository 'https://github.com/cggh/DQX.git'
   revision node["panoptes"]["DQX"]["version"]
+  user node["panoptes"]["user"]
   action :sync
 end
 
 git build_dir + "/DQXServer" do
   repository 'https://github.com/cggh/DQXServer.git'
   revision node["panoptes"]["DQXServer"]["version"]
+  user node["panoptes"]["user"]
   action :sync
 end
 
