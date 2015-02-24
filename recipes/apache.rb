@@ -7,15 +7,19 @@
 # All rights reserved - Do Not Redistribute
 #
 include_recipe 'apache2'
+include_recipe 'apache2::mod-wsgi'
+
+install_dir = node["panoptes"]["home"] + node["panoptes"]["path"]
 
 web_app 'panoptes' do
   template 'site.conf.erb'
-  docroot install_dir
+  docroot '/var/www/html'
+  install_dir install_dir
   server_name node['panoptes']['server_name']
 end
 
 # Enable necessary build-in apache modules
-%w{actions expires setenvif deflate filter expires rewrite ssl}.each do |module_name|
+%w{actions expires setenvif deflate filter expires rewrite wsgi}.each do |module_name|
   apache_module module_name do
     enable true
   end

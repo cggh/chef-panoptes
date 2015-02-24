@@ -4,13 +4,14 @@
   ServerName <%= @params[:server_name] %>
   DocumentRoot <%= @params[:docroot] %>
 
-  WSGIDaemonProcess Panoptes processes=2 threads=25 python-path=<%= @params[:docroot] %>/build/virtualenv/lib/python2.7/site-packages:<%= @params[:docroot] %>/build/DQXServer
+  WSGIDaemonProcess Panoptes processes=2 threads=25 python-path=<%= @params[:install_dir] %>/build/virtualenv/lib/python2.7/site-packages:<%= @params[:install_dir] %>/build/DQXServer
   WSGIProcessGroup Panoptes
-  WSGIScriptAlias / <%= @params[:docroot] %>/build/DQXServer/wsgi_server.py
+  WSGIScriptAlias / <%= @params[:install_dir] %>/build/DQXServer/wsgi_server.py
 
   <Directory />
     Options FollowSymLinks
     AllowOverride None
+    Require all granted
   </Directory>
 
 </VirtualHost>
