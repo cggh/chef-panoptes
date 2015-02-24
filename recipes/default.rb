@@ -28,16 +28,30 @@ user node["panoptes"]["user"] do
 end
 
 install_dir = node["panoptes"]["home"] + node["panoptes"]["path"]
-%w{install_dir node["panoptes"]["source_dir"] node["panoptes"]["base_dir"]}.each do |dir_name|
-  directory dir_name do
-    owner node["panoptes"]["user"]
-    group "www-data"
-    mode "0755"
-    action :create
-    recursive true
-  end
+
+directory install_dir do
+  owner node["panoptes"]["user"]
+  group "www-data"
+  mode "0755"
+  action :create
+  recursive true
 end
 
+directory node["panoptes"]["source_dir"] do
+  owner node["panoptes"]["user"]
+  group "www-data"
+  mode "0755"
+  action :create
+  recursive true
+end
+
+directory node["panoptes"]["base_dir"] do
+  owner node["panoptes"]["user"]
+  group "www-data"
+  mode "0755"
+  action :create
+  recursive true
+end
 
 execute "untar-panoptes" do
   cwd install_dir
@@ -109,9 +123,9 @@ template install_dir + "/config.py" do
 end
 
 
-bash "install_website" do
-  code "./scripts/build.sh"
+#bash "install_website" do
+#  code "./scripts/build.sh"
 #  user node["panoptes"]["user"]
-  cwd install_dir
-end
+#  cwd install_dir
+#end
 
