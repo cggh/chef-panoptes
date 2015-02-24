@@ -45,7 +45,7 @@ execute "untar-panoptes" do
   command "tar --strip-components 1 -xzf " + panoptes_install
 end
 
-virtualenv = install_dir + "/build/virtualenv"
+virtualenv = install_dir + "/build/panoptes_virtualenv"
 build_dir = install_dir + "/build"
 
 directory build_dir do
