@@ -7,7 +7,7 @@
 # All rights reserved - Do Not Redistribute
 #
 include_recipe 'apache2'
-include_recipe 'apache2::mod-wsgi'
+include_recipe 'apache2::mod_wsgi'
 
 install_dir = node["panoptes"]["home"] + node["panoptes"]["path"]
 
