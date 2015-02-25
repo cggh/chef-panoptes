@@ -52,7 +52,8 @@ mysql_database node['panoptes']['database'] do
 end
 
 #For the master database - but see below...
-mysql_database_user node['panoptes']['db_username'] do
+mysql_database_user "normal user on panoptes" do
+  username node['panoptes']['db_username']
   connection connection_info
   password node['panoptes']['db_password']
   database_name node['panoptes']['database']
@@ -61,7 +62,8 @@ mysql_database_user node['panoptes']['db_username'] do
 end
 
 #User needs to be able to create databases so give all perms on all dbs
-mysql_database_user node['panoptes']['db_username'] do
+mysql_database_user "admin user on *" do
+  username node['panoptes']['db_username']
   connection connection_info
   password node['panoptes']['db_password']
   privileges [:all]
