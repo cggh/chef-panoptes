@@ -16,6 +16,7 @@ web_app 'panoptes' do
   docroot '/var/www/html'
   install_dir install_dir
   server_name node['panoptes']['server_name']
+  virtualenv node['panoptes']['virtualenv']
 end
 
 # Enable necessary build-in apache modules

@@ -48,9 +48,19 @@ end
 directory node["panoptes"]["base_dir"] do
   owner node["panoptes"]["user"]
   group "www-data"
-  mode "0755"
+  mode "0775"
   action :create
   recursive true
+end
+
+%w{temp SummaryTracks Uploads Docs Graphs 2D_data}.each do |dir_name|
+  directory node["panoptes"]["base_dir"] + '/' + dir_name do
+    owner node["panoptes"]["user"]
+    group "www-data"
+    mode "0775"
+    action :create
+    recursive true
+  end
 end
 
 execute "untar-panoptes" do
@@ -59,7 +69,6 @@ execute "untar-panoptes" do
   command "tar --strip-components 1 -xzf " + panoptes_install
 end
 
-virtualenv = install_dir + "/build/panoptes_virtualenv"
 build_dir = install_dir + "/build"
 
 directory build_dir do
@@ -70,7 +79,7 @@ directory build_dir do
   recursive true
 end
 
-python_virtualenv virtualenv do
+python_virtualenv node["panoptes"]["virtualenv"] do
   interpreter "python2.7"
   owner node["panoptes"]["user"]
   group "www-data"
@@ -78,7 +87,7 @@ python_virtualenv virtualenv do
 end
 
 python_pip "numpy" do
-  virtualenv virtualenv
+  virtualenv node["panoptes"]["virtualenv"]
   version "1.9.1"
   user node["panoptes"]["user"]
   group "www-data"
@@ -122,6 +131,21 @@ template install_dir + "/config.py" do
   action :create_if_missing
 end
 
+python_pip build_dir + "/DQXServer/REQUIREMENTS" do
+  virtualenv node["panoptes"]["virtualenv"]
+  user node["panoptes"]["user"]
+  group "www-data"
+  options "-r"
+  action :install
+end
+
+python_pip install_dir + "/servermodule/REQUIREMENTS" do
+  virtualenv node["panoptes"]["virtualenv"]
+  user node["panoptes"]["user"]
+  group "www-data"
+  options "-r"
+  action :install
+end
 
 #bash "install_website" do
 #  code "./scripts/build.sh"

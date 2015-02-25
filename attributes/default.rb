@@ -26,4 +26,6 @@ default["panoptes"]["cas"]["service"] = ""
 default["panoptes"]["cas"]["logout"] = ""
 default["panoptes"]["cas"]["url"] = ""
 
+default["panoptes"]["virtualenv"] = "/home/panoptes/current/build/panoptes_virtualenv"
+
 default['panoptes']['server_name'] = "panoptes"
