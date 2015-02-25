@@ -12,30 +12,16 @@ include_recipe "python"
 include_recipe "panoptes::mysql_server"
 include_recipe "panoptes::apache"
 
-panoptes_install = Chef::Config[:file_cache_path] + "/" + node['panoptes']['version'] + ".tar.gz"
-
-remote_file panoptes_install do
-  source "https://github.com/cggh/panoptes/archive/" + node['panoptes']['version'] + ".tar.gz"
-  mode "0644"
-end
-
 user node["panoptes"]["user"] do
   uid node["panoptes"]["uid"]
   password node["panoptes"]["password"]
   home node["panoptes"]["home"]
   shell '/bin/bash'
+  supports :manage_home => true
   action :create
 end
 
 install_dir = node["panoptes"]["home"] + node["panoptes"]["path"]
-
-directory install_dir do
-  owner node["panoptes"]["user"]
-  group "www-data"
-  mode "0755"
-  action :create
-  recursive true
-end
 
 directory node["panoptes"]["source_dir"] do
   owner node["panoptes"]["user"]
@@ -63,10 +49,11 @@ end
   end
 end
 
-execute "untar-panoptes" do
-  cwd install_dir
+git install_dir do
+  repository 'https://github.com/cggh/panoptes.git'
+  revision node["panoptes"]["version"]
   user node["panoptes"]["user"]
-  command "tar --strip-components 1 -xzf " + panoptes_install
+  action :sync
 end
 
 build_dir = install_dir + "/build"
@@ -147,9 +134,9 @@ python_pip install_dir + "/servermodule/REQUIREMENTS" do
   action :install
 end
 
-#bash "install_website" do
-#  code "./scripts/build.sh"
-#  user node["panoptes"]["user"]
-#  cwd install_dir
-#end
+bash "install_website" do
+  code "./scripts/build.sh"
+  user node["panoptes"]["user"]
+  cwd install_dir
+end
 
