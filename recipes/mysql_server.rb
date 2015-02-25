@@ -64,6 +64,7 @@ end
 mysql_database_user node['panoptes']['db_username'] do
   connection connection_info
   password node['panoptes']['db_password']
+  privileges [:all]
   action :grant
 end
 
