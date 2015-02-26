@@ -1,7 +1,7 @@
 default["panoptes"]["database"] = "panoptes"
 default["panoptes"]["database_server"] = "127.0.0.1"
 default['panoptes']['database_data_dir'] = "/data/storage/mysql"
-default['panoptes']['database_tmp_dir'] = "/data/storage/tmpmysql"
+default['panoptes']['database_tmp_dir'] = "/tmp"
 default["panoptes"]["db_username"] = "panoptes"
 default["panoptes"]["db_password"] = "1234"
 default['panoptes']['database_buffer_pool_size'] = "2G"
