@@ -1,3 +1,4 @@
+default["panoptes"]["name"] = "panoptes"
 default["panoptes"]["database"] = "panoptes"
 default["panoptes"]["database_server"] = "127.0.0.1"
 default['panoptes']['database_data_dir'] = "/data/storage/mysql"
@@ -13,9 +14,10 @@ default["panoptes"]["uid"] = "5555"
 default["panoptes"]["password"] = "1234"
 default["panoptes"]["home"] = "/home/panoptes"
 
+default["panoptes"]["install_root"] = "/home/panoptes"
 default["panoptes"]["path"] = "/current"
 
-default["panoptes"]["version"] = "1.5.1"
+default["panoptes"]["version"] = "master"
 default["panoptes"]["DQX"]["version"] = "master"
 default["panoptes"]["DQXServer"]["version"] = "master"
 
@@ -26,6 +28,6 @@ default["panoptes"]["cas"]["service"] = ""
 default["panoptes"]["cas"]["logout"] = ""
 default["panoptes"]["cas"]["url"] = ""
 
-default["panoptes"]["virtualenv"] = "/home/panoptes/current/build/panoptes_virtualenv"
+default["panoptes"]["virtualenv"] = "/panoptes_virtualenv"
 
 default['panoptes']['server_name'] = "panoptes"

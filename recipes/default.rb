@@ -21,20 +21,12 @@ user node["panoptes"]["user"] do
   action :create
 end
 
-install_dir = node["panoptes"]["home"] + node["panoptes"]["path"]
+install_dir = node["panoptes"]["install_root"] + "/" + node["panoptes"]["version"]
 
-directory node["panoptes"]["source_dir"] do
+directory node["panoptes"]["install_root"] do
   owner node["panoptes"]["user"]
   group "www-data"
   mode "0755"
-  action :create
-  recursive true
-end
-
-directory node["panoptes"]["base_dir"] do
-  owner node["panoptes"]["user"]
-  group "www-data"
-  mode "0775"
   action :create
   recursive true
 end
@@ -66,7 +58,9 @@ directory build_dir do
   recursive true
 end
 
-python_virtualenv node["panoptes"]["virtualenv"] do
+build_ve = install_dir + "/build" + node["panoptes"]["virtualenv"]
+
+python_virtualenv build_ve do
   interpreter "python2.7"
   owner node["panoptes"]["user"]
   group "www-data"
@@ -74,7 +68,7 @@ python_virtualenv node["panoptes"]["virtualenv"] do
 end
 
 python_pip "numpy" do
-  virtualenv node["panoptes"]["virtualenv"]
+  virtualenv build_ve
   version "1.9.1"
   user node["panoptes"]["user"]
   group "www-data"
@@ -85,7 +79,7 @@ apt_package "libhdf5-serial-dev" do
   action :install
 end
 
-git build_dir + "/DQX" do
+git install_dir + "/webapp/scripts/DQX" do
   repository 'https://github.com/cggh/DQX.git'
   revision node["panoptes"]["DQX"]["version"]
   user node["panoptes"]["user"]
@@ -99,10 +93,35 @@ git build_dir + "/DQXServer" do
   action :sync
 end
 
-template install_dir + "/config.py" do
-  source "config.py.erb"
+link build_dir + "/DQXServer/customresponders" do
+ to install_dir + "/servermodule" 
+end
+
+file build_dir + "/DQXServer/customresponders/__init__.py" do
+  owner node["panoptes"]["user"]
+  group "www-data"
+  mode '0644'
+  action :create_if_missing
+end
+
+link install_dir + "/webapp/Docs" do
+  to node["panoptes"]["base_dir"] + "/Docs"
+end
+
+link install_dir + "/webapp/scripts/Local" do
+  to install_dir + "/webapp/scripts/Local.example" 
+end
+
+link build_dir + "/DQXServer/static" do
+  to install_dir + "/webapp"
+end
+
+template build_dir + "/DQXServer/config.py" do
+  source install_dir + "/config.py.example"
+  local true
   owner node["panoptes"]["user"]
   variables(
+    :name => node["panoptes"]["name"],
     :db_server_name => node["panoptes"]["database_server"],
     :db_user => node["panoptes"]["db_username"],
     :db_pass => node["panoptes"]["db_password"],
@@ -112,14 +131,25 @@ template install_dir + "/config.py" do
     :auth_file => node["panoptes"]["auth_file"],
     :cas_service => node["panoptes"]["cas"]["service"],
     :cas_logout => node["panoptes"]["cas"]["logout"],
-    :cas_url => node["panoptes"]["cas"]["url"])
+    :cas_url => node["panoptes"]["cas"]["url"]
+    )
   group "www-data"
   sensitive true
   action :create_if_missing
+  notifies :create, 'ruby_block[add-paths]'
+end
+
+ruby_block "add-paths" do
+  block do
+    fe = Chef::Util::FileEdit.new(build_dir + "/DQXServer/config.py")
+    fe.insert_line_if_no_match(/pythoncommand/, build_ve + '/bin/python')
+    fe.insert_line_if_no_match(/mysqlcommand/,  '/usr/bin/mysql')
+    fe.write_file
+  end
 end
 
 python_pip build_dir + "/DQXServer/REQUIREMENTS" do
-  virtualenv node["panoptes"]["virtualenv"]
+  virtualenv build_ve
   user node["panoptes"]["user"]
   group "www-data"
   options "-r"
@@ -127,16 +157,43 @@ python_pip build_dir + "/DQXServer/REQUIREMENTS" do
 end
 
 python_pip install_dir + "/servermodule/REQUIREMENTS" do
-  virtualenv node["panoptes"]["virtualenv"]
+  virtualenv build_ve
   user node["panoptes"]["user"]
   group "www-data"
   options "-r"
   action :install
 end
 
-bash "install_website" do
-  code "./scripts/build.sh"
-  user node["panoptes"]["user"]
-  cwd install_dir
+link node["panoptes"]["install_root"] + node["panoptes"]["path"] do
+ to install_dir
 end
+
+ruby_block "Replace name" do
+  block do
+    sed = Chef::Util::FileEdit.new(install_dir + "/webapp/index.html")
+    sed.search_file_replace(/#DEV#/, node["panoptes"]["name"])
+    sed.write_file
+  end
+end
+#Done later in case the directory already exists as parent of the git source
+directory node["panoptes"]["source_dir"] do
+  owner node["panoptes"]["user"]
+  group "www-data"
+  mode "0755"
+  action :create
+  recursive true
+end
+
+directory node["panoptes"]["base_dir"] do
+  owner node["panoptes"]["user"]
+  group "www-data"
+  mode "0775"
+  action :create
+  recursive true
+end
+#bash "install_website" do
+#  code "./scripts/build.sh"
+#  user node["panoptes"]["user"]
+#  cwd install_dir
+#end
 

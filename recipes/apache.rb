@@ -9,14 +9,14 @@
 include_recipe 'apache2'
 include_recipe 'apache2::mod_wsgi'
 
-install_dir = node["panoptes"]["home"] + node["panoptes"]["path"]
+install_dir = node["panoptes"]["install_root"] + node["panoptes"]["path"]
 
 web_app 'panoptes' do
   template 'site.conf.erb'
   docroot '/var/www/html'
   install_dir install_dir
   server_name node['panoptes']['server_name']
-  virtualenv node['panoptes']['virtualenv']
+  virtualenv node["panoptes"]["install_root"] + node["panoptes"]["path"] + "/build/" + node['panoptes']['virtualenv']
 end
 
 # Enable necessary build-in apache modules
