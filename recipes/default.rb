@@ -12,6 +12,9 @@ include_recipe "python"
 include_recipe "panoptes::mysql_server"
 include_recipe "panoptes::apache"
 
+install_dir = node["panoptes"]["install_root"] + "/" + node["panoptes"]["git"]["revision"]
+
+
 user node["panoptes"]["user"] do
   uid node["panoptes"]["uid"]
   password node["panoptes"]["password"]
@@ -20,8 +23,6 @@ user node["panoptes"]["user"] do
   supports :manage_home => true
   action :create
 end
-
-install_dir = node["panoptes"]["install_root"] + "/" + node["panoptes"]["version"]
 
 directory node["panoptes"]["install_root"] do
   owner node["panoptes"]["user"]
@@ -41,11 +42,13 @@ end
   end
 end
 
-git install_dir do
-  repository 'https://github.com/cggh/panoptes.git'
-  revision node["panoptes"]["version"]
+git "panoptes" do
+  destination install_dir
+  repository node["panoptes"]["git_root"] + '/panoptes.git'
+  revision node["panoptes"]["git"]["revision"]
   user node["panoptes"]["user"]
-  action :sync
+#  checkout_branch node["panoptes"]["git"]["branch"]
+  action :checkout
 end
 
 build_dir = install_dir + "/build"
@@ -79,18 +82,24 @@ apt_package "libhdf5-serial-dev" do
   action :install
 end
 
-git install_dir + "/webapp/scripts/DQX" do
-  repository 'https://github.com/cggh/DQX.git'
-  revision node["panoptes"]["DQX"]["version"]
+git "DQX" do
+  destination install_dir + "/webapp/scripts/DQX"
+  repository node["panoptes"]["git_root"] + '/DQX.git'
+#Can't use this - because file doesn't exist at compile time - if you try and use run_action on git[panoptes] other stuff not there
+#  revision ::File.open(install_dir + '/dependencies/DQX_Version').read
+  revision node["panoptes"]["git"]["DQX"]["revision"]
+#  checkout_branch node["panoptes"]["git"]["DQX"]["branch"]
   user node["panoptes"]["user"]
-  action :sync
+  action :checkout
 end
 
-git build_dir + "/DQXServer" do
-  repository 'https://github.com/cggh/DQXServer.git'
-  revision node["panoptes"]["DQXServer"]["version"]
+git "DQXServer" do
+  destination build_dir + "/DQXServer"
+  repository node["panoptes"]["git_root"] + '/DQXServer.git'
+  revision node["panoptes"]["git"]["DQXServer"]["revision"]
+#  checkout_branch node["panoptes"]["git"]["DQXServer"]["branch"]
   user node["panoptes"]["user"]
-  action :sync
+  action :checkout
 end
 
 link build_dir + "/DQXServer/customresponders" do
@@ -108,8 +117,20 @@ link install_dir + "/webapp/Docs" do
   to node["panoptes"]["base_dir"] + "/Docs"
 end
 
-link install_dir + "/webapp/scripts/Local" do
-  to install_dir + "/webapp/scripts/Local.example" 
+directory install_dir + "/webapp/scripts/Local/" do
+  owner node["panoptes"]["user"]
+  group "www-data"
+  mode "0755"
+  action :create
+  recursive true
+end
+
+template install_dir + "/webapp/scripts/Local/_SetServerUrl.js" do
+  source install_dir + "/webapp/scripts/Local.example/_SetServerUrl.js"
+  local true
+  owner node["panoptes"]["user"]
+  group "www-data"
+  action :create_if_missing
 end
 
 link build_dir + "/DQXServer/static" do
@@ -142,8 +163,8 @@ end
 ruby_block "add-paths" do
   block do
     fe = Chef::Util::FileEdit.new(build_dir + "/DQXServer/config.py")
-    fe.insert_line_if_no_match(/pythoncommand/, build_ve + '/bin/python')
-    fe.insert_line_if_no_match(/mysqlcommand/,  '/usr/bin/mysql')
+    fe.insert_line_if_no_match(/pythoncommand/, "pythoncommand='" + build_ve + "/bin/python'")
+    fe.insert_line_if_no_match(/mysqlcommand/,  "mysqlcommand='" + "/usr/bin/mysql'")
     fe.write_file
   end
 end

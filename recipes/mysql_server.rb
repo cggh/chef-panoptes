@@ -10,13 +10,13 @@
 connection_info = {:host => node["panoptes"]["database_server"], :username => 'root', :password => node['mysql']['server_root_password']}
 
 
-#directory node["panoptes"]["database_data_dir"] do
-#  owner "mysql"
-#  group "mysql"
-#  mode "0700"
-#  action :create
-#  recursive true
-#end
+directory node["panoptes"]["database_data_dir"] do
+  owner "mysql"
+  group "mysql"
+  mode "0700"
+  action :create
+  recursive true
+end
 
 #directory node["panoptes"]["database_tmp_dir"] do
 #  owner "mysql"
@@ -75,7 +75,7 @@ mysql_client 'default' do
   action :create
 end
 
-schema_script = node['panoptes']['install_root'] + '/' + node['panoptes']['version'] + '/scripts/datasetindex.sql'
+schema_script = node['panoptes']['install_root'] + '/' + node['panoptes']['git']['revision'] + '/scripts/datasetindex.sql'
 
 #This should work but doesn't due to bugs in database - see pull
 #Only runs when the database is created via the subscribes action
