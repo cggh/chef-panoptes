@@ -1,4 +1,5 @@
 default["panoptes"]["name"] = "panoptes"
+default["panoptes"]["title"] = "panoptes"
 default["panoptes"]["database"] = "panoptes"
 default["panoptes"]["database_server"] = "127.0.0.1"
 default['panoptes']['database_data_dir'] = "/data/storage/mysql"
@@ -35,3 +36,7 @@ default["panoptes"]["cas"]["url"] = ""
 default["panoptes"]["virtualenv"] = "/panoptes_virtualenv"
 
 default['panoptes']['server_name'] = "panoptes"
+
+default["panoptes"]["extra_head_js"] = ""
+default["panoptes"]["extra_tail_js"] = ""
+

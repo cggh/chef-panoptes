@@ -2,12 +2,15 @@
 # Cookbook Name:: panoptes
 # Recipe:: default
 #
-# Copyright 2015, YOUR_COMPANY_NAME
+# Copyright 2015, CGGH <info@cggh.org>
 #
 # All rights reserved - Do Not Redistribute
 #
 include_recipe 'git'
 include_recipe "python"
+chef_gem 'uuidtools'
+
+require 'uuidtools'
 
 install_dir = node["panoptes"]["install_root"] + "/" + node["panoptes"]["git"]["revision"]
 
@@ -186,13 +189,59 @@ link node["panoptes"]["install_root"] + node["panoptes"]["path"] do
  to install_dir
 end
 
-ruby_block "Replace name" do
+ruby_block 'generate_uuid' do
   block do
-    sed = Chef::Util::FileEdit.new(install_dir + "/webapp/index.html")
-    sed.search_file_replace(/#DEV#/, node["panoptes"]["name"])
-    sed.write_file
+    node.default[:app][:jsversion] = UUIDTools::UUID.random_create
   end
+  action :create
+  not_if node['panoptes'][:jsversion]
 end
+
+template install_dir + "/webapp/index.html" do
+  source install_dir + "/webapp/index.html.template"
+  local true
+  owner node["panoptes"]["user"]
+  variables(
+    :TITLE => node["panoptes"]["title"] + " - DEVELOPMENT MODE",
+    :VERSION => 'generateUIDNotMoreThan1million()',
+    :EXTRA_HEAD_JS => node["panoptes"]["extra_head_js"],
+    :EXTRA_TAIL_JS => node["panoptes"]["extra_tail_js"],
+    :DATA_MAIN => 'main',
+    :DEBUG => 'true'
+    )
+  group "www-data"
+  action :create_if_missing
+  only_if { node["panoptes"]["dev"] }
+end
+
+file 'compiled-js' do
+  content IO.read(install_dir + '/webapp/scripts/main-built.js')
+  path lazy { install_dir + '/webapp/scripts/main-built-' + node.default[:app][:jsversion] + '.js' }
+  owner node["panoptes"]["user"]
+  group "www-data"
+  sensitive true
+  not_if { node["panoptes"]["dev"] }
+end
+
+template "production-index" do
+  source install_dir + "/webapp/index.html.template"
+  path install_dir + "/webapp/index.html"
+  local true
+  owner node["panoptes"]["user"]
+  variables( lazy {
+    {:TITLE => node["panoptes"]["title"],
+    :VERSION =>  "'" + node.default[:app][:jsversion] + "'",
+    :EXTRA_HEAD_JS => node["panoptes"]["extra_head_js"],
+    :EXTRA_TAIL_JS => node["panoptes"]["extra_tail_js"],
+    :DATA_MAIN => 'main-built-' + node.default[:app][:jsversion] ,
+    :DEBUG => 'false'
+    }}
+    )
+  group "www-data"
+  action :create_if_missing
+  not_if { node["panoptes"]["dev"] }
+end
+
 #Done later in case the directory already exists as parent of the git source
 directory node["panoptes"]["source_dir"] do
   owner node["panoptes"]["user"]
