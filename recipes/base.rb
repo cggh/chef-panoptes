@@ -8,6 +8,7 @@
 #
 include_recipe 'git'
 include_recipe "python"
+include_recipe 'nodejs'
 chef_gem 'uuidtools'
 
 require 'uuidtools'
@@ -85,9 +86,7 @@ end
 git "DQX" do
   destination install_dir + "/webapp/scripts/DQX"
   repository node["panoptes"]["git_root"] + '/DQX.git'
-#Can't use this - because file doesn't exist at compile time - if you try and use run_action on git[panoptes] other stuff not there
-#  revision ::File.open(install_dir + '/dependencies/DQX_Version').read
-  revision node["panoptes"]["git"]["DQX"]["revision"]
+  revision lazy { ::File.open(install_dir + '/dependencies/DQX_Version').read.chomp }
 #  checkout_branch node["panoptes"]["git"]["DQX"]["branch"]
   user node["panoptes"]["user"]
   action :checkout
@@ -96,7 +95,7 @@ end
 git "DQXServer" do
   destination build_dir + "/DQXServer"
   repository node["panoptes"]["git_root"] + '/DQXServer.git'
-  revision node["panoptes"]["git"]["DQXServer"]["revision"]
+  revision lazy { ::File.open(install_dir + '/dependencies/DQXServer_Version').read.chomp }
 #  checkout_branch node["panoptes"]["git"]["DQXServer"]["branch"]
   user node["panoptes"]["user"]
   action :checkout
@@ -214,13 +213,28 @@ template install_dir + "/webapp/index.html" do
   only_if { node["panoptes"]["dev"] }
 end
 
+nodejs_npm 'requirejs' do
+  action :install
+  not_if { node["panoptes"]["dev"] }
+end
+
+compiledjs = install_dir + '/webapp/scripts/main-built.js'
+execute 'compile-js' do
+  command "node scripts/compilejs.js"
+  creates compiledjs
+  cwd install_dir
+  action :run
+  not_if { node["panoptes"]["dev"] }
+  notifies :create, 'file[compiled-js]'
+end
+
 file 'compiled-js' do
-  content IO.read(install_dir + '/webapp/scripts/main-built.js')
+  content lazy { IO.read(compiledjs) }
   path lazy { install_dir + '/webapp/scripts/main-built-' + node.default[:app][:jsversion] + '.js' }
   owner node["panoptes"]["user"]
   group "www-data"
   sensitive true
-  not_if { node["panoptes"]["dev"] }
+  action :nothing
 end
 
 template "production-index" do

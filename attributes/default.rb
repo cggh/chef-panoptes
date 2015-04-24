@@ -20,11 +20,9 @@ default["panoptes"]["install_root"] = "/home/panoptes"
 default["panoptes"]["path"] = "/current"
 
 default["panoptes"]["git"]["branch"] = "master"
-default["panoptes"]["git"]["DQX"]["branch"] = "master"
-default["panoptes"]["git"]["DQXServer"]["branch"] = "master"
-default["panoptes"]["git"]["revision"] = "HEAD"
-default["panoptes"]["git"]["DQX"]["revision"] = "HEAD"
-default["panoptes"]["git"]["DQXServer"]["revision"] = "HEAD"
+
+default["panoptes"]["extra_head_js"] = ''
+default["panoptes"]["extra_tail_js"] = ''
 
 default["panoptes"]["source_dir"] = "/data/storage/panoptes/source"
 default["panoptes"]["base_dir"] = "/data/storage/panoptes/base"
@@ -36,7 +34,3 @@ default["panoptes"]["cas"]["url"] = ""
 default["panoptes"]["virtualenv"] = "/panoptes_virtualenv"
 
 default['panoptes']['server_name'] = "panoptes"
-
-default["panoptes"]["extra_head_js"] = ""
-default["panoptes"]["extra_tail_js"] = ""
-
