@@ -7,6 +7,7 @@ default['panoptes']['database_tmp_dir'] = "/tmp"
 default["panoptes"]["db_username"] = "panoptes"
 default["panoptes"]["db_password"] = "1234"
 default['panoptes']['database_buffer_pool_size'] = "2G"
+default['panoptes']['swap'] = 1024
 default['mysql']['server_root_password'] = "1234"
 #Note that the user running git won't have ssh access so can't really change this
 default["panoptes"]["git_root"] = 'https://github.com/cggh'
