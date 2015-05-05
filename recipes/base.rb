@@ -137,8 +137,7 @@ link build_dir + "/DQXServer/static" do
 end
 
 template build_dir + "/DQXServer/config.py" do
-  source install_dir + "/config.py.example"
-  local true
+  source "config.py.erb"
   owner node["panoptes"]["user"]
   variables(
     :name => node["panoptes"]["name"],
