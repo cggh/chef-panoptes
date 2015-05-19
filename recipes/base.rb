@@ -220,7 +220,6 @@ end
 compiledjs = install_dir + '/webapp/scripts/main-built.js'
 execute 'compile-js' do
   command "node scripts/compilejs.js"
-  creates compiledjs
   cwd install_dir
   action :run
   not_if { node["panoptes"]["dev"] }
