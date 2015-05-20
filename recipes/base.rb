@@ -212,17 +212,20 @@ template install_dir + "/webapp/index.html" do
   only_if { node["panoptes"]["dev"] }
 end
 
+nodepath=node["panoptes"]["home"]
 nodejs_npm 'requirejs' do
   action :install
+  path nodepath
   not_if { node["panoptes"]["dev"] }
 end
 
 compiledjs = install_dir + '/webapp/scripts/main-built.js'
 execute 'compile-js' do
-  command "node scripts/compilejs.js"
+  command "NODE_PATH=" + nodepath + "/node_modules node scripts/compilejs.js"
   cwd install_dir
-  action :run
+  action :nothing
   not_if { node["panoptes"]["dev"] }
+  subscribes :run, "nodejs_npm[requirejs]"
   notifies :create, 'file[compiled-js]'
 end
 
