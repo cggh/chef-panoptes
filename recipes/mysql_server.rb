@@ -75,23 +75,3 @@ mysql_client 'default' do
   action :create
 end
 
-schema_script = node['panoptes']['install_root'] + '/' + node['panoptes']['git']['revision'] + '/scripts/datasetindex.sql'
-
-#This should work but doesn't due to bugs in database - see pull
-#Only runs when the database is created via the subscribes action
-#https://github.com/opscode-cookbooks/database/pull/129
-#mysql_database 'datasetindex' do
-#  database_name node['panoptes']['database']
-#  connection connection_info
-#  sql ::File.open(schema_script).read
-#  action :nothing
-#  subscribes :query, "mysql_database[#{node['panoptes']['database']}]"
-#end
-
-#Alternative to above
-bash 'create datasetindex' do
-  code '/usr/bin/mysql -u root -h ' + node["panoptes"]["database_server"] + ' -p' + node['mysql']['server_root_password'] + ' ' + node['panoptes']['database'] +' < ' + schema_script
-  action :nothing
-  subscribes :run, "mysql_database[#{node['panoptes']['database']}]"
-end
-
