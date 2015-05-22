@@ -1,0 +1,92 @@
+# For more information about this file, see: http://panoptes.readthedocs.org/en/latest/importdata/importsettings/datatable.html
+
+NameSingle: sample
+NamePlural: samples
+Description: A synthetic set of samples collected from a large area of Africa. The data table contains GPS coordinates, collection dates, and some fictitious properties.
+PrimKey: ID
+QuickFindFields: ID,CatId,RegionId
+
+MaxCountQueryRecords: 250000
+MaxCountQueryAggregated: 500000
+AllowSubSampling: Yes
+CacheWorkspaceData: Yes   # If Set, a materialised table will be created for this data in each workspace. This is faster for large data tables than the standard option, based on a JOIN statement
+
+#DisableNotes: Yes
+#DisableSubsets: Yes
+#DisablePlots: Yes
+
+Properties:
+
+- Id: ID
+  Name: Sample ID
+  ShowInTable: true
+  DataType: Text
+  Search: StartPattern
+
+- Id: CatId
+  Name: Category ID
+  DataType: Text
+  ShowInTable: true
+  IsCategorical: true
+
+- Id: RegionId
+  Name: Region ID
+  DataType: Text
+  ShowInTable: true
+  IsCategorical: true
+
+- Id: CollectionDate
+  Name: Collection date
+  DataType: Date
+  ShowInTable: true
+
+- Id: Longitude
+  Name: Longitude
+  DataType: GeoLongitude
+  ShowInTable: true
+
+- Id: Lattitude
+  Name: Lattitude
+  DataType: GeoLattitude
+  ShowInTable: true
+
+- Id: NumProp1
+  Name: Numerical 1
+  DataType: Value
+  ShowInTable: true
+  MinVal: -10
+  MaxVal: 10
+  BarWidth: 100
+
+- Id: NumProp2
+  Name: Numerical 2
+  DataType: Value
+  ShowInTable: true
+  MinVal: -10
+  MaxVal: 10
+  BarWidth: 100
+
+- Id: Filtrd
+  Name: Filtered
+  DataType: Boolean
+  ReadData: false
+  ShowInTable: true
+  CanUpdate: true
+  CategoryColors:
+    "No": rgb(255,128,60)
+    "Yes": rgb(0,180,0)
+    _other_: rgb(128, 128, 128)
+
+
+
+ExternalLinks:
+- Url: http://maps.google.com/maps?q={Lattitude},{Longitude}
+  Name: Show on Google Maps
+
+
+DataItemViews: # Lists all the custom views that should appear in the popup for an individual data table item
+
+- Type: ItemMap                                        # Defines a view that shows the location of the item on a geographic map
+  Name: Location                                       # Name of the view
+  MapZoom: 5                                           # Start zoom factor of the map
+

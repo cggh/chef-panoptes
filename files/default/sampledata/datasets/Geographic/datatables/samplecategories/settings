@@ -1,0 +1,26 @@
+# For more information about this file, see: http://panoptes.readthedocs.org/en/latest/importdata/importsettings/datatable.html
+
+NameSingle: sample category
+NamePlural: sample categories
+PrimKey: ID
+QuickFindFields: ID,Name
+Description: Each sample category is a fictitious grouping of a random number of samples.
+
+DisableNotes: Yes
+DisableSubsets: Yes
+DisablePlots: Yes
+
+Properties:
+
+- Id: ID
+  Name: ID
+  ShowInTable: true
+  DataType: Text
+  Search: StartPattern
+
+- Id: Name
+  Name: Name
+  DataType: Text
+  ShowInTable: true
+  IsCategorical: true
+  Search: StartPattern

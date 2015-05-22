@@ -1,0 +1,51 @@
+# For more information about this file, see: http://panoptes.readthedocs.org/en/latest/importdata/importsettings/customdata.html
+
+PropertyGroups:
+- Id: Custom
+  Name: Custom data
+
+
+
+Properties:
+
+- Id: Custom1
+  Name: Custom Value 1
+  GroupId: Custom
+  Description: An example of a custom numerical value
+  DataType: Value
+  ShowInTable: true
+  ShowInBrowser: true
+  MinVal: 0
+  MaxVal: 20
+  DecimDigits: 1
+  SummaryValues:
+     BlockSizeMin: 20
+     BlockSizeMax: 50000
+     ChannelColor: rgb(0,0,100)
+
+- Id: Custom2
+  Name: Custom value 2
+  GroupId: Custom
+  Description: An example of a custom text value
+  DataType: Text
+  ShowInTable: true
+  ShowInBrowser: false
+  IsCategorical: true
+
+- Id: EditBoolean1
+  Name: Editable boolean
+  GroupId: Info
+  Datatype: Boolean
+  ReadData: false
+  ShowInTable: true
+  CanUpdate: true
+
+
+
+DataItemViews:
+
+- Type: FieldList
+  Name: Custom view
+  Fields:
+  - Custom1
+  - Custom2

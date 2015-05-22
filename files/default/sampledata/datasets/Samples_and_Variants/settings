@@ -1,0 +1,50 @@
+# For more information about this file, see: http://panoptes.readthedocs.org/en/latest/importdata/importsettings/dataset.html
+
+Name: Samples & Variants               # The displayed name of this dataset
+NameBanner: Samples and Variants       # Name as it appears in the top banner of the app
+
+# A description of the dataset that will appear on the start page
+Description: >
+  This is the description of this sample dataset.
+  <div style="color:rgb(0,128,0)">A second line, html formatted</div>
+  An <a href="http://panoptes.readthedocs.org/en/latest//" target="_blank">external hyperlink</a>
+  and a <a class="doclink" href="intro">link</a> to documentation part of this deployment.
+
+# Optional: a list of all the data table identifiers in the dataset
+# These names should correspond to the folder names in [datatables]
+# This can be used to provide an explicit ordering of the data tables in the UI
+DataTables:
+- variants
+- samples
+- contributors
+- samplingsites
+- sampletypes
+- populations
+- repeats
+
+
+IntroRightPanelFrac: 0.4 # Use this parameter to control the proportion of left and right columns on the start page. If zero, the right column will be absent
+
+# The intro page may contain sections that contain quick start buttons to specific views in the app
+IntroSections:
+- Id: Sect1                 # Id of the section
+  Name: Intro section 1     # Display name of the section
+#  RightPanel: True         # If true, the section will appear in the right column, replacing the default content
+  Content: >                # Text content of the section, appearing about any quick start buttons
+    This is a section on the main page. You can add custom buttons to this section by
+    <ul>
+    <li>Click on the "Get link" button in the top right corner</li>
+    <li>Click on one of the "Add to start page" option</li>
+    <li>Enter the section id in the "Section" edit box</li>
+    </ul>
+    Note that you can use <a class="doclink" href="intro">links</a> to deployment documentation in this section.
+
+- Id: Sect2
+  Name: Intro section 2
+  Content: This is the intro text of Intro section 3
+
+- Id: Sect3
+  Name: Intro section 3
+  Content: This is the intro text of Intro section 3
+
+GoogleAnalyticsId: UA-56388755-1

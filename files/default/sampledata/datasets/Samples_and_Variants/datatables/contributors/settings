@@ -1,0 +1,66 @@
+# For more information about this file, see: http://panoptes.readthedocs.org/en/latest/importdata/importsettings/datatable.html
+
+NameSingle: contributor
+NamePlural: contributors
+Description: The entities that contributed the samples
+
+Icon: fa-institution # Optionally specify an icon identifier taken from the list http://fortawesome.github.io/Font-Awesome/icons/
+
+DisableNotes: true
+
+PrimKey: ID
+
+ItemTitle: <b>{{ID}}</b> {{Name}}
+
+Properties:
+- Id: ID
+  Description: Contributor identifier
+  DataType: Text
+  Search: Pattern
+
+- Id: Name
+  Description: Contributor name
+  DataType: Text
+  Search: Pattern
+
+- Id: Contact
+  Description: The highly-coupled knowledge-system that is responsible for the contribution
+  DataType: Text
+  Search: Pattern
+
+- Id: SomeText
+  Name: Sample count
+  Description: A description about the entity's relationship to the samples
+  DataType: Text
+  Search: Pattern
+
+ListView: true
+
+DataItemViews: # Lists the custom views that should appear in the popup for an individual data table item
+
+- Type: Template                                       # Add a template based view
+  Name: Details
+  Content: |
+      <h4>ID: {{ID}}</h4>
+      <h2>Contributing Entity: {{Name}}<h2>
+      <h3>Contact Person: {{Contact}}<h3>
+      <h4>
+      {{#if SomeText}}
+              {{{SomeText}}}
+      {{else}}
+              <i>There is no description available for this entity</i>
+      {{/if}}
+      </h4>
+      <h3>Sites:</h3>
+      <ul>
+      {{#each samplingsites}}
+        <li>{{SiteID}}, {{#if Country}}{{Country}}{{else}}<i>No country specified</i>{{/if}}</li>
+      {{else}}
+        No sites from this contributor
+      {{/each}}
+      </ul>
+      <h4>
+        More information on the nature of contribution <a class=\"doclink\" href=\"samples\">here</a>
+      </h4>
+
+

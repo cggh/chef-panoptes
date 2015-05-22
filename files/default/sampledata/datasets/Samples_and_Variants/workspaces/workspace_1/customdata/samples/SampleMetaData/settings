@@ -1,0 +1,29 @@
+# For more information about this file, see: http://panoptes.readthedocs.org/en/latest/importdata/importsettings/customdata.html
+
+Properties:
+
+- Id: Year
+  Name: The Year
+  Description: The year the sample was collected
+  DataType: Value
+  ShowInTable: true
+  DecimDigits: 0
+  ExternalUrl: http://en.wikipedia.org/wiki/{value}
+
+
+
+
+DataItemViews:
+
+- Type: Overview
+  Name: Overview
+
+- Type: FieldList
+  Name: Custom
+  Introduction: A custom field view
+  Fields:
+  - Site_ID
+  - Year
+  - Comment
+  - Country@samplingsites
+  - TypeName@sampletypes
