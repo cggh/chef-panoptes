@@ -7,8 +7,7 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '0.1.0'
 
 depends 'apt'
-depends 'iptables'
-depends 'apache2'
+depends 'apache2', '~> v3.2.2'
 depends 'git'
 depends 'python'
 depends 'nodejs'
