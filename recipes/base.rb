@@ -90,6 +90,7 @@ git "DQX" do
 #  checkout_branch node["panoptes"]["git"]["DQX"]["branch"]
   user node["panoptes"]["user"]
   action :checkout
+  only_if do ::File.exists?(install_dir + '/dependencies/DQX_Version') end
 end
 
 git "DQXServer" do
@@ -130,6 +131,7 @@ template install_dir + "/webapp/scripts/Local/_SetServerUrl.js" do
   owner node["panoptes"]["user"]
   group "www-data"
   action :create_if_missing
+  only_if { ::File.exists?(install_dir + "/webapp/scripts/Local.example/_SetServerUrl.js") }
 end
 
 link build_dir + "/DQXServer/static" do
@@ -209,7 +211,7 @@ template install_dir + "/webapp/index.html" do
     )
   group "www-data"
   action :create_if_missing
-  only_if { node["panoptes"]["dev"] }
+  only_if { node["panoptes"]["dev"] && ::File.exists?(install_dir + "/webapp/index.html.template") }
 end
 
 nodepath=node["panoptes"]["home"]
