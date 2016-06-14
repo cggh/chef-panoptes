@@ -229,6 +229,7 @@ execute 'compile-js' do
   not_if { node["panoptes"]["dev"] }
   subscribes :run, "nodejs_npm[requirejs]"
   notifies :create, 'file[compiled-js]'
+  only_if do ::File.exists?(install_dir + '/scripts/compilejs.js') end
 end
 
 file 'compiled-js' do
