@@ -258,6 +258,7 @@ template "production-index" do
   group "www-data"
   action :create_if_missing
   not_if { node["panoptes"]["dev"] }
+  only_if { ::File.exists?(install_dir + "/webapp/index.html.template") }
 end
 
 #Done later in case the directory already exists as parent of the git source
