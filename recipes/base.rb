@@ -168,6 +168,12 @@ end
 
 link build_dir + "/DQXServer/static" do
   to install_dir + "/webapp"
+  not_if { ::File.directory?(install_dir + "/webapp/dist") }
+end
+
+link build_dir + "/DQXServer/static" do
+  to install_dir + "/webapp/dist"
+  only_if { ::File.directory?(install_dir + "/webapp/dist") }
 end
 
 template build_dir + "/DQXServer/config.py" do
