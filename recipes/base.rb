@@ -82,6 +82,38 @@ end
 apt_package "libhdf5-serial-dev" do
   action :install
 end
+#This next section is necessary to allow pip install to work
+apt_package "libssl-dev" do
+  action :install
+end
+
+apt_package "libffi-dev" do
+  action :install
+end
+
+python_pip "pyOpenSSL" do
+  virtualenv build_ve
+  version "16.0.0"
+  user node["panoptes"]["user"]
+  group "www-data"
+  action :install
+end
+
+python_pip "ndg-httpsclient" do
+  virtualenv build_ve
+  version "0.4.1"
+  user node["panoptes"]["user"]
+  group "www-data"
+  action :install
+end
+
+python_pip "pyasn1" do
+  virtualenv build_ve
+  version "0.1.9"
+  user node["panoptes"]["user"]
+  group "www-data"
+  action :install
+end
 
 git "DQX" do
   destination install_dir + "/webapp/scripts/DQX"
