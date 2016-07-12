@@ -72,6 +72,6 @@ end
 
 mysql_client 'default' do
   version '5.6'
-  action :create
+  action :install
 end
 
