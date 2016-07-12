@@ -10,13 +10,13 @@
 connection_info = {:host => node["panoptes"]["database_server"], :username => 'root', :password => node['mysql']['server_root_password']}
 
 
-directory node["panoptes"]["database_data_dir"] do
-  owner "mysql"
-  group "mysql"
-  mode "0700"
-  action :create
-  recursive true
-end
+#directory node["panoptes"]["database_data_dir"] do
+#  owner "mysql"
+#  group "mysql"
+#  mode "0700"
+#  action :create
+#  recursive true
+#end
 
 #directory node["panoptes"]["database_tmp_dir"] do
 #  owner "mysql"
