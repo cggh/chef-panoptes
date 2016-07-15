@@ -1,35 +1,11 @@
-include_recipe 'nodejs'
-
+#node recipe installed in base.rb
+#
 install_dir = node["panoptes"]["install_root"] + "/" + node["panoptes"]["git"]["revision"]
 
 nodepath=install_dir + "/webapp"
 
-#Update
-nodejs_npm "npm" do
-end
-
-execute 'npm-update' do
-  command "npm install -g npm && npm cache clean -f && npm install -g n"
-  cwd nodepath
-end
-
-execute 'n-stable' do
-  command "n stable"
-  cwd nodepath
-  action :nothing
-  subscribes :run, "execute[npm-update]"
-end
-
 nodejs_npm "gulp-cli" do
-  action :nothing
-  subscribes :install, "execute[n-stable]"
-end
-
-nodejs_npm "esprima" do
-  user node["panoptes"]["user"]
-  path nodepath
-  action :nothing
-  subscribes :install, "execute[gulp-cli]"
+  action :install
 end
 
 nodejs_npm 'panoptes' do
@@ -37,7 +13,8 @@ nodejs_npm 'panoptes' do
   json true
   user node["panoptes"]["user"]
   path nodepath
-  subscribes :install, "nodejs_npm[esprima]"
+  ignore_failure true
+  subscribes :install, "nodejs_npm[gulp-cli]"
 end
 
 execute 'run-build-js' do
@@ -57,5 +34,32 @@ ruby_block 'set_app_server' do
   action :nothing
   subscribes :run, "execute[run-build-js]"
   not_if { ::File.exists?(install_dir + "/webapp/scripts/Local.example/_SetServerUrl.js") }
+end
+
+nodepath=node["panoptes"]["home"]
+nodejs_npm 'requirejs' do
+  action :install
+  path nodepath
+  not_if { node["panoptes"]["dev"] }
+end
+
+compiledjs = install_dir + '/webapp/scripts/main-built.js'
+execute 'compile-js' do
+  command "NODE_PATH=" + nodepath + "/node_modules node scripts/compilejs.js"
+  cwd install_dir
+  action :nothing
+  not_if { node["panoptes"]["dev"] }
+  subscribes :run, "nodejs_npm[requirejs]"
+  notifies :create, 'file[compiled-js]'
+  only_if do ::File.exists?(install_dir + '/scripts/compilejs.js') end
+end
+
+file 'compiled-js' do
+  content lazy { IO.read(compiledjs) }
+  path lazy { install_dir + '/webapp/scripts/main-built-' + node.default[:app][:jsversion] + '.js' }
+  owner node["panoptes"]["user"]
+  group "www-data"
+  sensitive true
+  action :nothing
 end
 

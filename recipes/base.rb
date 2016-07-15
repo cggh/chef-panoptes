@@ -6,9 +6,21 @@
 #
 # All rights reserved - Do Not Redistribute
 #
+include_recipe 'apt'
+
+apt_repository "node.js" do
+  uri "https://deb.nodesource.com/node_4.x"
+  key 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'
+  components ['main']
+end
+
+node.default['nodejs']["engine"] = "node"
+node.default['nodejs']["repo"] = "https://deb.nodesource.com/node_4.x"
+
+include_recipe 'nodejs'
+
 include_recipe 'git'
 include_recipe "python"
-include_recipe 'nodejs'
 chef_gem 'uuidtools'
 
 require 'uuidtools'
@@ -166,6 +178,17 @@ template install_dir + "/webapp/scripts/Local/_SetServerUrl.js" do
   only_if { ::File.exists?(install_dir + "/webapp/scripts/Local.example/_SetServerUrl.js") }
 end
 
+ruby_block 'set_app_server' do
+  block do
+    file = Chef::Util::FileEdit.new(install_dir + "/webapp/dist/index.html")
+    file.search_file_replace('localhost:8000', node["panoptes"]["server_name"])
+    file.write_file
+  end
+  action :run
+  not_if { ::File.exists?(install_dir + "/webapp/scripts/Local.example/_SetServerUrl.js") }
+end
+
+
 link build_dir + "/DQXServer/static" do
   to install_dir + "/webapp"
   not_if { ::File.directory?(install_dir + "/webapp/dist") }
@@ -250,33 +273,6 @@ template install_dir + "/webapp/index.html" do
   group "www-data"
   action :create_if_missing
   only_if { node["panoptes"]["dev"] && ::File.exists?(install_dir + "/webapp/index.html.template") }
-end
-
-nodepath=node["panoptes"]["home"]
-nodejs_npm 'requirejs' do
-  action :install
-  path nodepath
-  not_if { node["panoptes"]["dev"] }
-end
-
-compiledjs = install_dir + '/webapp/scripts/main-built.js'
-execute 'compile-js' do
-  command "NODE_PATH=" + nodepath + "/node_modules node scripts/compilejs.js"
-  cwd install_dir
-  action :nothing
-  not_if { node["panoptes"]["dev"] }
-  subscribes :run, "nodejs_npm[requirejs]"
-  notifies :create, 'file[compiled-js]'
-  only_if do ::File.exists?(install_dir + '/scripts/compilejs.js') end
-end
-
-file 'compiled-js' do
-  content lazy { IO.read(compiledjs) }
-  path lazy { install_dir + '/webapp/scripts/main-built-' + node.default[:app][:jsversion] + '.js' }
-  owner node["panoptes"]["user"]
-  group "www-data"
-  sensitive true
-  action :nothing
 end
 
 template "production-index" do
