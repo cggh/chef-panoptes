@@ -9,13 +9,13 @@
 include_recipe 'apt'
 
 apt_repository "node.js" do
-  uri "https://deb.nodesource.com/node_4.x"
+  uri "https://deb.nodesource.com/node_6.x"
   key 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'
   components ['main']
 end
 
 node.default['nodejs']["engine"] = "node"
-node.default['nodejs']["repo"] = "https://deb.nodesource.com/node_4.x"
+node.default['nodejs']["repo"] = "https://deb.nodesource.com/node_6.x"
 
 include_recipe 'nodejs'
 
