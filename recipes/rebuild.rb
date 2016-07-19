@@ -8,13 +8,28 @@ nodejs_npm "gulp-cli" do
   action :install
 end
 
+directory "clean-node" do
+  recursive true
+  path nodepath + "/node_modules"
+  action :nothing
+  subscribes :delete, "nodejs_npm[gulp-cli]"
+end
+
+execute 'clean-cache' do
+  command "npm cache clean"
+  cwd nodepath
+  action :nothing
+  user node["panoptes"]["user"]
+  subscribes :run, "directory[clean-node]"
+end
+
 nodejs_npm 'panoptes' do
   action :nothing
   json true
   user node["panoptes"]["user"]
   path nodepath
   ignore_failure true
-  subscribes :install, "nodejs_npm[gulp-cli]"
+  subscribes :install, "execute[clean-cache]"
 end
 
 execute 'run-build-js' do
