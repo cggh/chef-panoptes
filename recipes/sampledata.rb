@@ -9,7 +9,16 @@ remote_directory node["panoptes"]["source_dir"] do
   action :create_if_missing
 end
 
+directory node["panoptes"]["source_dir"] do
+  owner node["panoptes"]["user"]
+  mode '0770'
+  group 'www-data'
+  recursive true
+  notifies :get, 'http_request[load_sample_data]', :delayed
+end
+
 http_request 'load_sample_data' do
   url 'http://' + node["panoptes"]["server_name"] + '/api?datatype=custom&respmodule=panoptesserver&respid=fileload_dataset&ScopeStr=all&SkipTableTracks=false&datasetid=Samples_and_Variants'
+  action :nothing
 end
 
